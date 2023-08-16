@@ -1,6 +1,6 @@
 import React from 'react'
 
-const FormRow = ({type, name, value, handleChange, labelText}) => {
+const FormRow = ({type, name, value, handleChange, labelText,}) => {
   return (
       <div className="form-row">
           <label htmlFor={name}>{labelText || name}</label>
@@ -9,7 +9,7 @@ const FormRow = ({type, name, value, handleChange, labelText}) => {
               value={value}
               name={name}
               onChange={handleChange}
-              className = 'form-input'
+              className='form-input'
           />
     </div>
   )

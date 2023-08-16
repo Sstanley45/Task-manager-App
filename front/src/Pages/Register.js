@@ -1,17 +1,20 @@
-import { useState,useContext } from "react";
+import { useState,useContext, useEffect, } from "react";
 import {FormRow, Alert} from "../components"
 import Wrapper from "../assets/wrappers/RegisterWrapper";
 import Logo from '../components/Logo'
-import {AppContext} from '../contexts/appContext'
+import { AppContext } from '../contexts/appContext'
+import { useNavigate } from 'react-router-dom'
 
-const Register = () => {
-  const { displayAlert,showAlert } = useContext(AppContext)
+
+const Register = () => {    
+  const navigate = useNavigate()
+  const { displayAlert,showAlert, registerUser, loginUser, user } = useContext(AppContext)
   
-    const [values, setValues] = useState({
+    const [values, setValues] = useState({ 
         name: '',
-        email: '',
+        email: '', 
         password: '',
-        isMember: false   
+        isMember: ''  
     })
   
     const handleChange = (e) => {
@@ -22,22 +25,36 @@ const Register = () => {
   
   const handleSubmit = (e) => {
     e.preventDefault()
-    
-    if (!values.name || !values.email || !values.password) {
-      displayAlert()         
-      return
+    const { name, email, password, isMember } = values;   
+    if (!email || !password || (!isMember && !name)) { 
+      return displayAlert();
     }
-    console.log('logged in');   
+    const currentUser = { name, email, password }
+    
+    if (isMember) {
+     return loginUser(currentUser) 
+    } else {
+      return registerUser(currentUser) 
+    }
   }
+
+
+  useEffect(() => {
+    if (user) {
+      setTimeout(() => {
+        navigate('/home')
+      },3000)
+    }
+  },[user, navigate]) 
 
     return (
       <Wrapper className="full-page">
-        <form className="form" onSubmit={handleSubmit}>
+        <form className="form" onSubmit={handleSubmit}> 
           <Logo />
-          <h3>{values.isMember ? "register" : "login"}</h3>
+          <h3>{values.isMember ? "login" : "register"}</h3>
           {showAlert && <Alert />}
           {/*  name */}
-          {values.isMember && (
+          {!values.isMember && (
             <FormRow
               type="text"
               name="name"
@@ -66,9 +83,9 @@ const Register = () => {
             submit
           </button>
           <p>
-            {values.isMember ? "Already a member ?" : "Not yet a member ?"}
+            {!values.isMember ? "Already a member ?" : "Not yet a member ?"}
             <button type="button" className="member-btn" onClick={()=>{setValues({...values,isMember:!values.isMember})}}>
-              {values.isMember ? "login" : "register"}
+              {!values.isMember ? "login" : "register"}
             </button>
           </p>
         </form>
